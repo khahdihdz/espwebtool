@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="vi" data-bs-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quản trị Firmware · ESP32 Flash Studio</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="../assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg sticky-top navbar-glass">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="../index.html">
+      <span class="brand-mark"><i class="bi bi-cpu-fill"></i></span>
+      <span class="brand-text">ESP32 <strong>Flash Studio</strong></span>
+    </a>
+    <div class="d-flex align-items-center gap-2">
+      <span class="badge-version"><i class="bi bi-gear"></i> Quản trị</span>
+      <a href="../index.html" class="btn btn-sm btn-outline-light"><i class="bi bi-arrow-left"></i> Về trang chính</a>
+    </div>
+  </div>
+</nav>
+
+<div class="toast-container position-fixed top-0 end-0 p-3" id="toastContainer" style="z-index: 1090"></div>
+
+<main class="container py-5">
+
+  <div class="section-head">
+    <span class="section-eyebrow">Bảng điều khiển</span>
+    <h2>Quản lý Firmware &amp; Manifest</h2>
+    <p class="section-sub">
+      Công cụ này chạy hoàn toàn trên trình duyệt (không có backend). Nó giúp bạn <strong>đóng gói firmware và
+      sinh sẵn file <code>manifest.json</code></strong> đúng chuẩn ESP Web Tools, cũng như mô phỏng việc quản lý
+      danh sách phiên bản bằng <code>localStorage</code>. Sau khi tạo xong, bạn tải file về và commit thủ công vào
+      thư mục <code>/firmware/</code> của dự án rồi cập nhật <code>boards.json</code>.
+    </p>
+  </div>
+
+  <div class="alert alert-warning-glass mb-4">
+    <i class="bi bi-info-circle-fill"></i>
+    Đây là trang quản trị <strong>mô phỏng</strong>: không có máy chủ lưu trữ nên mọi thay đổi chỉ tồn tại trong
+    trình duyệt của bạn (localStorage) cho đến khi bạn tải file kết quả về và tự cập nhật vào mã nguồn dự án.
+  </div>
+
+  <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tabBuild" type="button">
+        <i class="bi bi-box-seam"></i> Đóng gói &amp; sinh Manifest
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabVersions" type="button">
+        <i class="bi bi-diagram-3"></i> Quản lý phiên bản
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabImport" type="button">
+        <i class="bi bi-upload"></i> Nhập manifest.json có sẵn
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+
+    <!-- =================== TAB 1: ĐÓNG GÓI & SINH MANIFEST =================== -->
+    <div class="tab-pane fade show active" id="tabBuild">
+      <div class="row g-4">
+        <div class="col-lg-5">
+          <div class="panel">
+            <h5 class="mb-3"><i class="bi bi-sliders"></i> Thông tin firmware</h5>
+
+            <label class="form-label panel-label">Tên dự án (name)</label>
+            <input class="form-control select-console mb-3" id="fName" value="Firmware ESP32 DevKit V1">
+
+            <label class="form-label panel-label">Phiên bản (version)</label>
+            <input class="form-control select-console mb-3" id="fVersion" placeholder="vd: 2.1.0">
+
+            <label class="form-label panel-label">Loại chip (chipFamily)</label>
+            <select class="form-select select-console mb-3" id="fChip">
+              <option value="ESP32">ESP32</option>
+              <option value="ESP32-S2">ESP32-S2</option>
+              <option value="ESP32-S3">ESP32-S3</option>
+              <option value="ESP32-C3">ESP32-C3</option>
+              <option value="ESP8266">ESP8266</option>
+            </select>
+
+            <div class="form-check form-switch mb-2">
+              <input class="form-check-input" type="checkbox" id="fErase" checked>
+              <label class="form-check-label" for="fErase">Hỏi xoá toàn bộ flash khi cài mới (new_install_prompt_erase)</label>
+            </div>
+
+            <button class="btn btn-outline-light w-100 mt-2" id="btnAutoOffsets">
+              <i class="bi bi-magic"></i> Điền offset mặc định theo chip
+            </button>
+          </div>
+        </div>
+
+        <div class="col-lg-7">
+          <div class="panel h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0"><i class="bi bi-hdd-stack"></i> Các phần firmware (parts)</h5>
+              <button class="btn btn-sm btn-outline-light" id="btnAddPart"><i class="bi bi-plus-lg"></i> Thêm dòng</button>
+            </div>
+
+            <div class="upload-zone mb-3" id="dropZone">
+              <i class="bi bi-cloud-arrow-up fs-3 d-block mb-2"></i>
+              Kéo thả file .bin vào đây hoặc <label for="fileInput" class="text-accent" style="cursor:pointer">chọn file</label>
+              <input type="file" id="fileInput" accept=".bin" multiple hidden>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-console align-middle" id="partsTable">
+                <thead>
+                  <tr><th>Tên file</th><th style="width:140px">Offset</th><th style="width:50px"></th></tr>
+                </thead>
+                <tbody id="partsBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h5 class="mb-0"><i class="bi bi-code-slash"></i> manifest.json (xem trước)</h5>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-light" id="btnCopyManifest"><i class="bi bi-clipboard"></i> Sao chép</button>
+            <button class="btn btn-sm btn-accent" id="btnDownloadManifest"><i class="bi bi-download"></i> Tải manifest.json</button>
+          </div>
+        </div>
+        <pre class="log-output" id="manifestPreview" style="color:var(--accent-2)"></pre>
+      </div>
+    </div>
+
+    <!-- =================== TAB 2: QUẢN LÝ PHIÊN BẢN =================== -->
+    <div class="tab-pane fade" id="tabVersions">
+      <div class="panel mb-4">
+        <h5 class="mb-3"><i class="bi bi-plus-circle"></i> Thêm phiên bản vào danh sách mô phỏng</h5>
+        <div class="row g-2">
+          <div class="col-md-3">
+            <input class="form-control select-console" id="vBoardKey" placeholder="mã board, vd: esp32-devkit-v1">
+          </div>
+          <div class="col-md-2">
+            <input class="form-control select-console" id="vVersion" placeholder="vd: v2.1.0">
+          </div>
+          <div class="col-md-4">
+            <input class="form-control select-console" id="vManifestPath" placeholder="firmware/esp32-devkit-v1/v2.1.0/manifest.json">
+          </div>
+          <div class="col-md-2">
+            <input class="form-control select-console" id="vDate" type="date">
+          </div>
+          <div class="col-md-1">
+            <button class="btn btn-accent w-100" id="btnAddVersion"><i class="bi bi-plus-lg"></i></button>
+          </div>
+          <div class="col-12">
+            <textarea class="form-control select-console mt-2" id="vNotes" rows="2" placeholder="Ghi chú phát hành, mỗi dòng một mục…"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0"><i class="bi bi-list-check"></i> Danh sách phiên bản (mô phỏng)</h5>
+          <button class="btn btn-sm btn-outline-light" id="btnExportBoards"><i class="bi bi-download"></i> Xuất boards.json</button>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-console align-middle">
+            <thead><tr><th>Board</th><th>Phiên bản</th><th>Manifest</th><th>Ngày</th><th style="width:60px"></th></tr></thead>
+            <tbody id="versionsBody"></tbody>
+          </table>
+        </div>
+        <p class="text-dim small mb-0">Danh sách này được lưu trong <code>localStorage</code> của trình duyệt bạn — chỉ mang tính mô phỏng để chuẩn bị nội dung, không tự động cập nhật lên máy chủ.</p>
+      </div>
+    </div>
+
+    <!-- =================== TAB 3: NHẬP MANIFEST CÓ SẴN =================== -->
+    <div class="tab-pane fade" id="tabImport">
+      <div class="panel">
+        <h5 class="mb-3"><i class="bi bi-filetype-json"></i> Dán hoặc tải lên manifest.json để kiểm tra định dạng</h5>
+        <input type="file" id="importFile" accept="application/json" class="form-control select-console mb-3">
+        <textarea class="form-control select-console" id="importText" rows="12" placeholder='Dán nội dung manifest.json vào đây để kiểm tra…'></textarea>
+        <button class="btn btn-accent mt-3" id="btnValidate"><i class="bi bi-check2-square"></i> Kiểm tra định dạng</button>
+        <div class="mt-3" id="validateResult"></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container text-center small text-dim">
+    Trang quản trị mô phỏng — không kết nối máy chủ. © <span id="year"></span> ESP32 Flash Studio.
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="admin.js" type="module"></script>
+</body>
+</html>

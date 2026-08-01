@@ -1,0 +1,113 @@
+{
+  "defaultBoard": "esp32-devkit-v1",
+  "boards": {
+    "esp32-devkit-v1": {
+      "label": "ESP32 DevKit V1 (ESP-WROOM-32)",
+      "chipFamily": "ESP32",
+      "module": "ESP-WROOM-32",
+      "usbChip": "Silicon Labs CP2102",
+      "flashSize": "4MB",
+      "baudrate": 921600,
+      "fallbackBaudrate": 460800,
+      "defaultVersion": "v2.0.0",
+      "versions": {
+        "v2.0.0": {
+          "manifest": "firmware/esp32-devkit-v1/v2.0.0/manifest.json",
+          "date": "2026-06-15",
+          "notes": [
+            "Thêm hỗ trợ cập nhật OTA qua Wi-Fi",
+            "Cải thiện độ ổn định kết nối Wi-Fi khi tín hiệu yếu",
+            "Sửa lỗi treo thiết bị khi khởi động lạnh (cold boot)",
+            "Tối ưu dung lượng flash, giảm 15% kích thước firmware"
+          ]
+        },
+        "v1.1.0": {
+          "manifest": "firmware/esp32-devkit-v1/v1.1.0/manifest.json",
+          "date": "2026-03-02",
+          "notes": [
+            "Thêm cấu hình qua Web Portal khi chưa có Wi-Fi",
+            "Sửa lỗi mất kết nối MQTT sau vài giờ hoạt động",
+            "Cập nhật thư viện bảo mật TLS"
+          ]
+        },
+        "v1.0.0": {
+          "manifest": "firmware/esp32-devkit-v1/v1.0.0/manifest.json",
+          "date": "2025-12-10",
+          "notes": [
+            "Phát hành lần đầu",
+            "Hỗ trợ kết nối Wi-Fi cơ bản",
+            "Hỗ trợ điều khiển GPIO qua MQTT"
+          ]
+        }
+      }
+    },
+    "esp32-s2": {
+      "label": "ESP32-S2",
+      "chipFamily": "ESP32-S2",
+      "module": "ESP32-S2-WROVER",
+      "usbChip": "USB CDC gốc / CP2102 (tuỳ board)",
+      "flashSize": "4MB",
+      "baudrate": 921600,
+      "fallbackBaudrate": 460800,
+      "defaultVersion": "v1.0.0",
+      "versions": {
+        "v1.0.0": {
+          "manifest": "firmware/esp32-s2/v1.0.0/manifest.json",
+          "date": "2026-01-20",
+          "notes": ["Phát hành lần đầu cho dòng ESP32-S2"]
+        }
+      }
+    },
+    "esp32-s3": {
+      "label": "ESP32-S3",
+      "chipFamily": "ESP32-S3",
+      "module": "ESP32-S3-WROOM-1",
+      "usbChip": "USB CDC gốc / CP2102 (tuỳ board)",
+      "flashSize": "8MB",
+      "baudrate": 921600,
+      "fallbackBaudrate": 460800,
+      "defaultVersion": "v1.0.0",
+      "versions": {
+        "v1.0.0": {
+          "manifest": "firmware/esp32-s3/v1.0.0/manifest.json",
+          "date": "2026-01-20",
+          "notes": ["Phát hành lần đầu cho dòng ESP32-S3"]
+        }
+      }
+    },
+    "esp32-c3": {
+      "label": "ESP32-C3",
+      "chipFamily": "ESP32-C3",
+      "module": "ESP32-C3-WROOM-02",
+      "usbChip": "USB CDC gốc / CP2102 (tuỳ board)",
+      "flashSize": "4MB",
+      "baudrate": 921600,
+      "fallbackBaudrate": 460800,
+      "defaultVersion": "v1.0.0",
+      "versions": {
+        "v1.0.0": {
+          "manifest": "firmware/esp32-c3/v1.0.0/manifest.json",
+          "date": "2026-01-20",
+          "notes": ["Phát hành lần đầu cho dòng ESP32-C3"]
+        }
+      }
+    },
+    "esp8266": {
+      "label": "ESP8266 (NodeMCU / Wemos D1)",
+      "chipFamily": "ESP8266",
+      "module": "ESP8266MOD",
+      "usbChip": "CH340 / CP2102 (tuỳ board)",
+      "flashSize": "4MB",
+      "baudrate": 460800,
+      "fallbackBaudrate": 115200,
+      "defaultVersion": "v1.0.0",
+      "versions": {
+        "v1.0.0": {
+          "manifest": "firmware/esp8266/v1.0.0/manifest.json",
+          "date": "2026-01-20",
+          "notes": ["Phát hành lần đầu cho dòng ESP8266"]
+        }
+      }
+    }
+  }
+}
