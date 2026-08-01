@@ -35,16 +35,16 @@
     <h2>Quản lý Firmware &amp; Manifest</h2>
     <p class="section-sub">
       Công cụ này chạy hoàn toàn trên trình duyệt (không có backend). Nó giúp bạn <strong>đóng gói firmware và
-      sinh sẵn file <code>manifest.json</code></strong> đúng chuẩn ESP Web Tools, cũng như mô phỏng việc quản lý
-      danh sách phiên bản bằng <code>localStorage</code>. Sau khi tạo xong, bạn tải file về và commit thủ công vào
-      thư mục <code>/firmware/</code> của dự án rồi cập nhật <code>boards.json</code>.
+      sinh sẵn file <code>manifest.json</code></strong> đúng chuẩn ESP Web Tools, cũng như quản lý danh sách
+      phiên bản bằng <code>localStorage</code>. Sau khi tạo xong, bạn tải file về và commit thủ công vào thư mục
+      <code>/firmware/</code> của dự án rồi cập nhật <code>boards.json</code>.
     </p>
   </div>
 
   <div class="alert alert-warning-glass mb-4">
     <i class="bi bi-info-circle-fill"></i>
-    Đây là trang quản trị <strong>mô phỏng</strong>: không có máy chủ lưu trữ nên mọi thay đổi chỉ tồn tại trong
-    trình duyệt của bạn (localStorage) cho đến khi bạn tải file kết quả về và tự cập nhật vào mã nguồn dự án.
+    Trang quản trị này không có máy chủ lưu trữ: mọi thay đổi chỉ tồn tại trong trình duyệt của bạn
+    (<code>localStorage</code>) cho đến khi bạn tải file kết quả về và tự cập nhật vào mã nguồn dự án.
   </div>
 
   <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
@@ -140,7 +140,7 @@
     <!-- =================== TAB 2: QUẢN LÝ PHIÊN BẢN =================== -->
     <div class="tab-pane fade" id="tabVersions">
       <div class="panel mb-4">
-        <h5 class="mb-3"><i class="bi bi-plus-circle"></i> Thêm phiên bản vào danh sách mô phỏng</h5>
+        <h5 class="mb-3"><i class="bi bi-plus-circle"></i> Thêm phiên bản mới</h5>
         <div class="row g-2">
           <div class="col-md-3">
             <input class="form-control select-console" id="vBoardKey" placeholder="mã board, vd: esp32-devkit-v1">
@@ -165,7 +165,7 @@
 
       <div class="panel">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5 class="mb-0"><i class="bi bi-list-check"></i> Danh sách phiên bản (mô phỏng)</h5>
+          <h5 class="mb-0"><i class="bi bi-list-check"></i> Danh sách phiên bản</h5>
           <button class="btn btn-sm btn-outline-light" id="btnExportBoards"><i class="bi bi-download"></i> Xuất boards.json</button>
         </div>
         <div class="table-responsive">
@@ -174,7 +174,7 @@
             <tbody id="versionsBody"></tbody>
           </table>
         </div>
-        <p class="text-dim small mb-0">Danh sách này được lưu trong <code>localStorage</code> của trình duyệt bạn — chỉ mang tính mô phỏng để chuẩn bị nội dung, không tự động cập nhật lên máy chủ.</p>
+        <p class="text-dim small mb-0">Danh sách này được lưu trong <code>localStorage</code> của trình duyệt bạn — chỉ để chuẩn bị nội dung, không tự động đồng bộ giữa các máy.</p>
       </div>
     </div>
 
@@ -194,7 +194,7 @@
 
 <footer class="footer">
   <div class="container text-center small text-dim">
-    Trang quản trị mô phỏng — không kết nối máy chủ. © <span id="year"></span> ESP32 Flash Studio.
+    Trang quản trị chạy trên trình duyệt — không kết nối máy chủ. © <span id="year"></span> ESP32 Flash Studio.
   </div>
 </footer>
 

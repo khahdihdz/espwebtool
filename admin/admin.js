@@ -1,5 +1,5 @@
 // =====================================================================
-// admin.js — Trang quản trị firmware (mô phỏng, không backend)
+// admin.js — Trang quản trị firmware (chạy hoàn toàn ở trình duyệt, không backend)
 // =====================================================================
 
 function showToast(message, variant = "info", title = "Thông báo") {
@@ -153,10 +153,10 @@ DEFAULT_OFFSETS.ESP32.forEach((p) => addPartRow(p.path, p.offset));
 renderManifest();
 
 /* ---------------------------------------------------------------------
- * TAB 2 — QUẢN LÝ PHIÊN BẢN (mô phỏng bằng localStorage)
+ * TAB 2 — QUẢN LÝ PHIÊN BẢN (lưu trong localStorage của trình duyệt)
  * ------------------------------------------------------------------- */
 
-const STORAGE_KEY = "espFlashStudio.versionsSim";
+const STORAGE_KEY = "espFlashStudio.versions";
 
 function loadVersions() {
   try {
@@ -173,7 +173,7 @@ function renderVersionsTable() {
   const list = loadVersions();
   const body = document.getElementById("versionsBody");
   if (list.length === 0) {
-    body.innerHTML = `<tr><td colspan="5" class="text-dim text-center py-4">Chưa có phiên bản nào trong danh sách mô phỏng.</td></tr>`;
+    body.innerHTML = `<tr><td colspan="5" class="text-dim text-center py-4">Chưa có phiên bản nào.</td></tr>`;
     return;
   }
   body.innerHTML = list
@@ -195,7 +195,7 @@ function renderVersionsTable() {
       list.splice(Number(btn.dataset.i), 1);
       saveVersions(list);
       renderVersionsTable();
-      showToast("Đã xoá phiên bản khỏi danh sách mô phỏng.", "warning", "Đã xoá");
+      showToast("Đã xoá phiên bản khỏi danh sách.", "warning", "Đã xoá");
     })
   );
 }
@@ -216,7 +216,7 @@ document.getElementById("btnAddVersion").addEventListener("click", () => {
   list.unshift({ board, version, manifest, date, notes });
   saveVersions(list);
   renderVersionsTable();
-  showToast(`Đã thêm phiên bản ${version} cho "${board}" vào danh sách mô phỏng.`, "success", "Đã thêm");
+  showToast(`Đã thêm phiên bản ${version} cho "${board}".`, "success", "Đã thêm");
 
   ["vBoardKey", "vVersion", "vManifestPath", "vDate", "vNotes"].forEach((id) => (document.getElementById(id).value = ""));
 });
@@ -224,7 +224,7 @@ document.getElementById("btnAddVersion").addEventListener("click", () => {
 document.getElementById("btnExportBoards").addEventListener("click", () => {
   const list = loadVersions();
   if (list.length === 0) {
-    showToast("Danh sách mô phỏng đang trống, chưa có gì để xuất.", "warning", "Không có dữ liệu");
+    showToast("Danh sách đang trống, chưa có gì để xuất.", "warning", "Không có dữ liệu");
     return;
   }
   const boards = {};
