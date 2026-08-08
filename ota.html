@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0e12" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="manifest" href="/manifest.json" />
+  <title>OTA Dashboard — ESP32 Flash Tool</title>
+</head>
+<body>
+  <header class="appbar">
+    <div class="appbar__mark" aria-hidden="true"></div>
+    <div class="appbar__title">ESP32 Flash Tool<small>USB OTG · không cần PC</small></div>
+    <nav class="appbar__nav">
+      <a href="/index.html">Flash</a>
+      <a href="/ota.html" aria-current="page">OTA</a>
+      <a href="/system-check.html">Kiểm tra</a>
+      <a href="/help.html">Hướng dẫn</a>
+    </nav>
+  </header>
+
+  <main>
+    <p class="callout">
+      Trang này chỉ <b>kiểm tra và hiển thị</b> thông tin bản cập nhật từ một manifest JSON do bạn cấu hình
+      (ví dụ host trên GitHub Releases). Việc tải firmware, kiểm tra chữ ký và ghi vào OTA partition
+      được thực hiện <b>bởi chính firmware ESP32</b> qua Wi-Fi — không phải bởi trang web này.
+      Xem <code>firmware-demo/</code> trong mã nguồn để biết cách firmware tự làm việc đó.
+    </p>
+
+    <section class="panel">
+      <h2 class="panel__title">Nguồn firmware (manifest URL)</h2>
+      <label class="field">URL manifest.json</label>
+      <input type="text" id="manifestUrl" placeholder="https://example.com/firmware/manifest.json" />
+      <button class="btn btn--ghost" id="btnCheckUpdate" style="margin-top:10px">🔍 Kiểm tra bản cập nhật</button>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel__title">ESP32 OTA</h2>
+      <dl class="kv">
+        <dt>Thiết bị</dt><dd>ESP32 DevKit V1</dd>
+        <dt>Firmware hiện tại</dt><dd id="curVersion">chưa xác định — nhập thủ công bên dưới</dd>
+        <dt>Firmware mới nhất</dt><dd id="latestVersion">—</dd>
+        <dt>SHA-256</dt><dd id="latestSha">—</dd>
+      </dl>
+
+      <label class="field" style="margin-top:14px">Phiên bản đang chạy trên thiết bị (tự nhập, chỉ để so sánh)</label>
+      <input type="text" id="currentVersionInput" placeholder="1.0.0" />
+
+      <div class="callout hidden" id="updateResult" style="margin-top:12px"></div>
+      <a class="btn btn--primary hidden" id="btnDownload" style="margin-top:10px;text-decoration:none;text-align:center" target="_blank" rel="noopener">⬇️ Mở link firmware mới</a>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel__title">Định dạng manifest.json mong đợi</h2>
+      <pre class="log" style="height:auto;padding:12px">{
+  "version": "1.0.1",
+  "url": "https://github.com/.../firmware-v1.0.1.bin",
+  "sha256": "….",
+  "size": 1490000,
+  "notes": "Sửa lỗi kết nối Wi-Fi"
+}</pre>
+    </section>
+  </main>
+
+  <footer class="pagefoot">Firmware tự tải, kiểm tra SHA-256 và rollback nếu lỗi — xem firmware-demo/src/main.cpp</footer>
+
+  <script type="module" src="/src/ota.ts"></script>
+</body>
+</html>

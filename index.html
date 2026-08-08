@@ -1,433 +1,109 @@
-<!DOCTYPE html>
-<html lang="vi" data-bs-theme="dark">
+<!doctype html>
+<html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ESP32 Flash Studio — Nạp firmware ESP32 qua trình duyệt</title>
-<meta name="description" content="Nạp firmware cho ESP32, ESP32-S2, ESP32-S3, ESP32-C3 và ESP8266 trực tiếp từ trình duyệt bằng Web Serial API. Không cần cài đặt phần mềm.">
-<meta name="theme-color" content="#0B0F14">
-<meta name="color-scheme" content="dark light">
-
-<!-- Open Graph -->
-<meta property="og:type" content="website">
-<meta property="og:title" content="ESP32 Flash Studio — Nạp firmware ESP32 qua trình duyệt">
-<meta property="og:description" content="Công cụ nạp firmware ESP32/ESP8266 miễn phí, chạy hoàn toàn trên trình duyệt qua Web Serial API. Không cần cài đặt phần mềm.">
-<meta property="og:image" content="assets/img/og-cover.png">
-<meta property="og:url" content="https://esp32-flash-studio.vercel.app/">
-<meta property="og:locale" content="vi_VN">
-
-<!-- Twitter Card -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="ESP32 Flash Studio — Nạp firmware ESP32 qua trình duyệt">
-<meta name="twitter:description" content="Nạp firmware ESP32/ESP8266 trực tiếp từ trình duyệt qua Web Serial API, không cần cài phần mềm.">
-<meta name="twitter:image" content="assets/img/og-cover.png">
-
-<link rel="canonical" href="https://esp32-flash-studio.vercel.app/">
-<link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
-<link rel="manifest" href="manifest.webmanifest">
-
-<!-- Bootstrap 5 -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-<!-- Bootstrap Icons -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-<!-- Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-
-<link rel="stylesheet" href="style.css">
-
-<!-- ESP Web Tools chính thức (esp-web-install-button) -->
-<script type="module" src="https://unpkg.com/esp-web-tools@10.2.1/dist/web/install-button.js?module"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0e12" />
+  <meta name="description" content="Nạp firmware ESP32 trực tiếp từ điện thoại Android qua cáp USB OTG, không cần máy tính." />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.svg" />
+  <title>ESP32 Flash Tool — Nạp firmware qua Android</title>
 </head>
 <body>
-
-<!-- ============ THANH ĐIỀU HƯỚNG ============ -->
-<nav class="navbar navbar-expand-lg sticky-top navbar-glass">
-  <div class="container">
-    <a class="navbar-brand d-flex align-items-center gap-2" href="#top">
-      <span class="brand-mark"><i class="bi bi-cpu-fill"></i></span>
-      <span class="brand-text">ESP32 <strong>Flash Studio</strong></span>
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="nav">
-      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
-        <li class="nav-item"><a class="nav-link" href="#huong-dan">Hướng dẫn</a></li>
-        <li class="nav-item"><a class="nav-link" href="#release-notes">Nhật ký phiên bản</a></li>
-        <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
-        <li class="nav-item"><a class="nav-link" href="admin/index.html"><i class="bi bi-gear"></i> Quản trị</a></li>
-      </ul>
-    </div>
-  </div>
-</nav>
-
-<!-- ============ TOAST CONTAINER ============ -->
-<div class="toast-container position-fixed top-0 end-0 p-3" id="toastContainer" style="z-index: 1090"></div>
-
-<main id="top">
-
-  <!-- ============ HERO ============ -->
-  <header class="hero">
-    <div class="hero-trace" aria-hidden="true"></div>
-    <div class="container position-relative">
-      <div class="row align-items-center gy-5">
-        <div class="col-lg-7">
-          <span class="eyebrow"><span class="dot-pulse"></span> Trực tiếp qua trình duyệt · Không cần cài phần mềm</span>
-          <h1 class="hero-title">Nạp firmware ESP32<br>chỉ với <span class="text-accent">một cú chạm.</span></h1>
-          <p class="hero-lede">
-            ESP32 Flash Studio dùng Web Serial API và thư viện chính thức <strong>esp-web-tools</strong> của
-            ESPHome để nạp firmware trực tiếp từ trình duyệt — trên máy tính lẫn điện thoại Android — không cần
-            cài đặt driver hay phần mềm nào.
-          </p>
-          <div class="d-flex flex-wrap gap-2 mb-4">
-            <span class="chip"><i class="bi bi-box-seam"></i> ESP32 DevKit V1</span>
-            <span class="chip"><i class="bi bi-motherboard"></i> ESP-WROOM-32</span>
-            <span class="chip"><i class="bi bi-usb-symbol"></i> CP2102</span>
-            <span class="chip"><i class="bi bi-hdd"></i> Flash 4MB</span>
-          </div>
-
-          <div class="d-flex flex-wrap gap-2">
-            <button class="btn btn-accent btn-lg" id="btnInstall">
-              <i class="bi bi-lightning-charge-fill"></i> Cài đặt Firmware
-            </button>
-            <button class="btn btn-outline-light btn-lg" id="btnCheckUpdate">
-              <i class="bi bi-arrow-repeat"></i> Kiểm tra cập nhật
-            </button>
-            <button class="btn btn-outline-light btn-lg" id="btnViewLog">
-              <i class="bi bi-terminal"></i> Xem nhật ký
-            </button>
-          </div>
-
-          <!-- Nút cài đặt thật của esp-web-tools, được kích hoạt gián tiếp qua #btnInstall -->
-          <esp-web-install-button id="espInstall" manifest="firmware/esp32-devkit-v1/v2.0.0/manifest.json" style="display:none">
-            <button slot="activate" id="espActivate"></button>
-            <span slot="unsupported"></span>
-            <span slot="not-allowed"></span>
-          </esp-web-install-button>
-        </div>
-
-        <div class="col-lg-5">
-          <div class="console-card">
-            <div class="console-card__head">
-              <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
-              <span class="console-card__title">trạng thái · serial0</span>
-            </div>
-            <div class="console-card__body">
-              <div class="status-row">
-                <span class="status-label">Trình duyệt</span>
-                <span class="status-value" id="statBrowser">—</span>
-              </div>
-              <div class="status-row">
-                <span class="status-label">Web Serial</span>
-                <span class="status-value" id="statSerial">—</span>
-              </div>
-              <div class="status-row">
-                <span class="status-label">Kết nối bảo mật (HTTPS)</span>
-                <span class="status-value" id="statHttps">—</span>
-              </div>
-              <div class="status-row">
-                <span class="status-label">Thiết bị</span>
-                <span class="status-value" id="statDevice">Chưa kết nối</span>
-              </div>
-              <hr class="console-hr">
-              <div class="status-pill" id="flashState" data-state="idle">
-                <span class="status-pill__icon"><i class="bi bi-hourglass-split"></i></span>
-                <span class="status-pill__text">Sẵn sàng nạp firmware</span>
-              </div>
-              <div class="progress progress-console mt-3" role="progressbar" aria-label="Tiến trình nạp firmware" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                <div class="progress-bar" id="flashProgress" style="width:0%">0%</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+  <header class="appbar">
+    <div class="appbar__mark" aria-hidden="true"></div>
+    <div class="appbar__title">ESP32 Flash Tool<small>USB OTG · không cần PC</small></div>
+    <nav class="appbar__nav">
+      <a href="/index.html" aria-current="page">Flash</a>
+      <a href="/ota.html">OTA</a>
+      <a href="/system-check.html">Kiểm tra</a>
+      <a href="/help.html">Hướng dẫn</a>
+    </nav>
   </header>
 
-  <!-- ============ CẢNH BÁO TRÌNH DUYỆT KHÔNG HỖ TRỢ ============ -->
-  <div class="container" id="unsupportedBanner" style="display:none">
-    <div class="alert alert-warning-glass d-flex gap-3 align-items-start" role="alert">
-      <i class="bi bi-exclamation-triangle-fill fs-3"></i>
-      <div>
-        <h5 class="alert-heading mb-1">Trình duyệt của bạn chưa hỗ trợ Web Serial</h5>
-        <p class="mb-1" id="unsupportedReason">Đang kiểm tra nguyên nhân…</p>
-        <p class="mb-0">Vui lòng <strong>cập nhật Google Chrome lên phiên bản mới nhất</strong> hoặc sử dụng
-          <strong>Microsoft Edge</strong>. Trên iOS/Safari, Web Serial hiện chưa được hỗ trợ.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- ============ CHỌN BO MẠCH & PHIÊN BẢN ============ -->
-  <section class="section" id="cau-hinh">
-    <div class="container">
-      <div class="section-head">
-        <span class="section-eyebrow">01 · Cấu hình</span>
-        <h2>Chọn bo mạch &amp; phiên bản firmware</h2>
+  <main>
+    <section class="panel" id="panel-connect">
+      <h2 class="panel__title">Kết nối</h2>
+      <div class="status-row">
+        <span class="dot dot--idle" id="statusDot"></span>
+        <span class="status-text" id="statusText">USB: <b>Chưa kết nối</b></span>
       </div>
 
-      <div class="row g-4">
-        <div class="col-lg-4">
-          <div class="panel">
-            <label class="form-label panel-label" for="selBoard"><i class="bi bi-cpu"></i> Loại bo mạch</label>
-            <select class="form-select form-select-lg select-console" id="selBoard"></select>
-
-            <label class="form-label panel-label mt-3" for="selVersion"><i class="bi bi-tag"></i> Phiên bản firmware</label>
-            <select class="form-select form-select-lg select-console" id="selVersion"></select>
-
-            <dl class="board-meta mt-4">
-              <div><dt>Module</dt><dd id="metaModule">—</dd></div>
-              <div><dt>USB‑UART</dt><dd id="metaUsb">—</dd></div>
-              <div><dt>Dung lượng Flash</dt><dd id="metaFlash">—</dd></div>
-              <div><dt>Tốc độ nạp (baudrate)</dt><dd id="metaBaud">—</dd></div>
-            </dl>
-          </div>
-        </div>
-
-        <div class="col-lg-8">
-          <div class="panel h-100" id="release-notes">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
-              <label class="panel-label mb-0"><i class="bi bi-journal-text"></i> Nhật ký phiên bản (Release Notes)</label>
-              <span class="badge-version" id="badgeVersion">v0.0.0</span>
-            </div>
-            <p class="text-dim small mb-3" id="releaseDate">Ngày phát hành: —</p>
-            <ul class="release-list" id="releaseList"></ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ HƯỚNG DẪN TỪNG BƯỚC ============ -->
-  <section class="section section-alt" id="huong-dan">
-    <div class="container">
-      <div class="section-head">
-        <span class="section-eyebrow">02 · Hướng dẫn</span>
-        <h2>Nạp firmware trong 6 bước</h2>
-        <p class="section-sub">Thực hiện tuần tự trên Chrome hoặc Edge — máy tính hoặc Android.</p>
-      </div>
-
-      <div class="steps-rail">
-        <div class="step-card">
-          <div class="step-num">01</div>
-          <i class="bi bi-usb-plug step-icon"></i>
-          <h3>Cắm ESP32</h3>
-          <p>Dùng cáp USB‑C <strong>hỗ trợ truyền dữ liệu</strong> (không phải cáp chỉ sạc) để nối ESP32 với máy tính hoặc điện thoại.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">02</div>
-          <i class="bi bi-shield-check step-icon"></i>
-          <h3>Cho phép quyền USB</h3>
-          <p>Trên Android, hệ thống có thể hỏi quyền truy cập thiết bị USB — chọn <strong>Cho phép / Allow</strong>.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">03</div>
-          <i class="bi bi-lightning-charge step-icon"></i>
-          <h3>Nhấn "Cài đặt Firmware"</h3>
-          <p>Bấm nút cài đặt ở đầu trang để mở hộp thoại chọn cổng Serial của trình duyệt.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">04</div>
-          <i class="bi bi-cpu step-icon"></i>
-          <h3>Chọn thiết bị CP2102</h3>
-          <p>Chọn cổng có tên gần giống <code>Silicon Labs CP2102 USB to UART Bridge Controller</code>.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">05</div>
-          <i class="bi bi-hourglass-split step-icon"></i>
-          <h3>Chờ nạp hoàn tất</h3>
-          <p>Theo dõi thanh tiến trình — không rút cáp hoặc tắt màn hình trong lúc nạp.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">06</div>
-          <i class="bi bi-check-circle step-icon"></i>
-          <h3>ESP32 tự khởi động</h3>
-          <p>Thiết bị tự khởi động lại sau khi nạp xong và sẵn sàng hoạt động với firmware mới.</p>
+      <div class="board" aria-hidden="true">
+        <div class="board__chip"></div>
+        <div class="board__pins">
+          <span class="board__pin" id="pinDtr"><i></i>DTR</span>
+          <span class="board__pin" id="pinRts"><i></i>RTS</span>
+          <span class="board__pin" id="pinBoot"><i></i>GPIO0</span>
         </div>
       </div>
 
-      <div class="panel panel-warn mt-4">
-        <h5><i class="bi bi-tools"></i> Không kết nối được thiết bị?</h5>
-        <p class="mb-2">Nếu trình duyệt không nhận ra ESP32, hãy đưa board vào chế độ nạp thủ công (bootloader mode):</p>
-        <ol class="mb-0">
-          <li>Giữ nút <strong>BOOT</strong>.</li>
-          <li>Nhấn giữ rồi thả nút <strong>EN</strong> (reset).</li>
-          <li>Thả nút <strong>EN</strong>.</li>
-          <li>Thả nút <strong>BOOT</strong>, sau đó bấm lại "Cài đặt Firmware".</li>
+      <div class="btn-row" style="margin-top:10px">
+        <button class="btn btn--primary" id="btnConnect">🔌 Kết nối ESP32</button>
+        <button class="btn btn--danger hidden" id="btnDisconnect" style="max-width:150px">🔌 Ngắt</button>
+      </div>
+      <button class="btn btn--ghost" id="btnChipInfo" disabled>ℹ️ Thông tin chip</button>
+
+      <div class="callout" id="calloutBoot" style="margin-top:10px">
+        <p><b>Nếu không tự vào chế độ nạp được (Auto Boot thất bại):</b></p>
+        <ol class="steps" style="margin:0">
+          <li>Giữ nút <code>BOOT</code></li>
+          <li>Nhấn rồi thả nút <code>RESET/EN</code></li>
+          <li>Thả nút <code>BOOT</code></li>
+          <li>Bấm lại "Kết nối ESP32"</li>
         </ol>
       </div>
-    </div>
-  </section>
 
-  <!-- ============ CHECKLIST TRÌNH DUYỆT ============ -->
-  <section class="section">
-    <div class="container">
-      <div class="section-head">
-        <span class="section-eyebrow">03 · Kiểm tra hệ thống</span>
-        <h2>Trình duyệt của bạn đã sẵn sàng chưa?</h2>
+      <dl class="kv hidden" id="chipInfoBox"></dl>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel__title">Firmware</h2>
+      <p class="status-text" style="margin:0 0 10px">
+        Mặc định chỉ cần <b>1 file firmware.bin</b> ghi ở offset <code>0x10000</code>.
+        Bấm "Thêm file" nếu bạn cần nạp riêng bootloader.bin (0x1000) và partitions.bin (0x8000).
+      </p>
+      <div id="fwRows"></div>
+      <button class="btn btn--ghost btn--sm" id="btnAddFwRow">+ Thêm file</button>
+
+      <div class="callout hidden" id="fwValidation" style="margin-top:12px"></div>
+
+      <label class="field" style="margin-top:14px">
+        <input type="checkbox" id="chkEraseAll" style="width:auto;margin-right:6px" />
+        Xoá toàn bộ flash trước khi ghi (khuyến nghị cho lần nạp đầu tiên)
+      </label>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel__title">Thao tác</h2>
+      <button class="btn btn--danger" id="btnErase" disabled>🧹 Xoá Flash</button>
+      <button class="btn btn--primary" id="btnFlash" disabled>⚡ Flash Firmware</button>
+      <button class="btn btn--ghost" id="btnReset" disabled>🔄 Reset ESP32</button>
+
+      <div class="trace" id="trace" aria-hidden="true"></div>
+      <div class="progress-meta">
+        <span id="progressLabel">Sẵn sàng</span>
+        <span id="progressPct"><b>0%</b></span>
       </div>
-      <div class="row g-3" id="checklistGrid"></div>
-    </div>
-  </section>
 
-  <!-- ============ FAQ ============ -->
-  <section class="section section-alt" id="faq">
-    <div class="container">
-      <div class="section-head">
-        <span class="section-eyebrow">04 · Câu hỏi thường gặp</span>
-        <h2>FAQ</h2>
+      <div class="callout hidden" id="verifyBox" style="margin-top:10px"></div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel__title">Log</h2>
+      <div class="log" id="log" role="log" aria-live="polite"></div>
+      <div class="log-actions">
+        <button class="btn btn--ghost btn--sm" id="btnCopyLog">Copy log</button>
+        <button class="btn btn--ghost btn--sm" id="btnClearLog">Xoá log</button>
       </div>
-      <div class="accordion accordion-console" id="faqAccordion">
+    </section>
 
-        <div class="accordion-item">
-          <h3 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
-              Vì sao nút "Cài đặt Firmware" bị mờ / không bấm được?
-            </button>
-          </h3>
-          <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-            <div class="accordion-body">Trình duyệt của bạn có thể chưa hỗ trợ Web Serial API, hoặc trang đang
-              không chạy qua HTTPS/localhost (secure context). Kiểm tra bảng "Kiểm tra hệ thống" ở trên để biết
-              chính xác nguyên nhân.</div>
-          </div>
-        </div>
+    <p class="callout callout--warn" id="unsupportedBanner" style="display:none"></p>
+  </main>
 
-        <div class="accordion-item">
-          <h3 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
-              Điện thoại Android của tôi không hiện hộp thoại chọn cổng USB?
-            </button>
-          </h3>
-          <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-            <div class="accordion-body">Hãy chắc chắn bạn dùng <strong>Chrome hoặc Edge phiên bản mới nhất trên
-              Android</strong>, cáp USB‑C hỗ trợ truyền dữ liệu, và đã cho phép quyền USB khi hệ thống hỏi. Một số
-              điện thoại cần bật thêm tuỳ chọn "Ưu tiên truyền dữ liệu" trong thông báo USB.</div>
-          </div>
-        </div>
+  <footer class="pagefoot">esp32-web-flasher · Web Serial + esptool-js · chạy hoàn toàn phía trình duyệt</footer>
 
-        <div class="accordion-item">
-          <h3 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
-              Nạp firmware có xoá dữ liệu Wi-Fi đã lưu trên ESP32 không?
-            </button>
-          </h3>
-          <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-            <div class="accordion-body">Với bản cài đặt mới hoàn toàn, ESP Web Tools sẽ hỏi bạn có muốn xoá toàn
-              bộ flash trước khi nạp hay không. Nếu chỉ cập nhật phiên bản, dữ liệu cấu hình (như Wi‑Fi) thường
-              được giữ nguyên trừ khi bạn chọn xoá.</div>
-          </div>
-        </div>
-
-        <div class="accordion-item">
-          <h3 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
-              Nạp bị lỗi giữa chừng / đứng ở phần trăm nào đó?
-            </button>
-          </h3>
-          <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-            <div class="accordion-body">Nguyên nhân thường gặp: cáp USB kém chất lượng, cổng USB không đủ dòng,
-              hoặc tốc độ baudrate quá cao cho một số board CP2102 đời cũ. Trang sẽ tự động thử lại ở tốc độ thấp
-              hơn (460800). Nếu vẫn lỗi, hãy đưa board vào chế độ nạp thủ công theo hướng dẫn ở mục 02.</div>
-          </div>
-        </div>
-
-        <div class="accordion-item">
-          <h3 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
-              Trang này có gửi firmware hoặc dữ liệu của tôi lên máy chủ nào không?
-            </button>
-          </h3>
-          <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-            <div class="accordion-body">Không. Toàn bộ quá trình nạp diễn ra trực tiếp giữa trình duyệt và ESP32
-              qua Web Serial API. Đây là trang tĩnh, không có backend, không lưu trữ hay truyền dữ liệu của bạn đi
-              đâu cả.</div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<!-- ============ FOOTER ============ -->
-<footer class="footer">
-  <div class="container">
-    <div class="row gy-4">
-      <div class="col-md-4">
-        <div class="d-flex align-items-center gap-2 mb-2">
-          <span class="brand-mark"><i class="bi bi-cpu-fill"></i></span>
-          <strong>ESP32 Flash Studio</strong>
-        </div>
-        <p class="text-dim small mb-0">Công cụ nạp firmware ESP32/ESP8266 mã nguồn mở, chạy hoàn toàn trên trình
-          duyệt bằng Web Serial API và thư viện chính thức esp-web-tools của ESPHome.</p>
-      </div>
-      <div class="col-md-4">
-        <h6 class="footer-heading">Liên kết</h6>
-        <ul class="list-unstyled footer-links">
-          <li><a href="#huong-dan">Hướng dẫn sử dụng</a></li>
-          <li><a href="#faq">Câu hỏi thường gặp</a></li>
-          <li><a href="admin/index.html">Trang quản trị firmware</a></li>
-          <li><a href="https://esphome.github.io/esp-web-tools/" target="_blank" rel="noopener">Tài liệu ESP Web Tools</a></li>
-        </ul>
-      </div>
-      <div class="col-md-4">
-        <h6 class="footer-heading">Yêu cầu hệ thống</h6>
-        <ul class="list-unstyled footer-links">
-          <li><i class="bi bi-check2"></i> Chrome / Edge phiên bản mới</li>
-          <li><i class="bi bi-check2"></i> Kết nối HTTPS (secure context)</li>
-          <li><i class="bi bi-check2"></i> Cáp USB‑C hỗ trợ truyền dữ liệu</li>
-        </ul>
-      </div>
-    </div>
-    <hr class="footer-rule">
-    <div class="d-flex flex-wrap justify-content-between gap-2 small text-dim">
-      <span>© <span id="year"></span> ESP32 Flash Studio. Phát hành theo giấy phép mã nguồn mở.</span>
-      <span>Xây dựng với ESP Web Tools · esptool-js</span>
-    </div>
-  </div>
-</footer>
-
-<!-- ============ MODAL NHẬT KÝ ============ -->
-<div class="modal fade" id="logModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg">
-    <div class="modal-content modal-console">
-      <div class="modal-header">
-        <h5 class="modal-title"><i class="bi bi-terminal"></i> Nhật ký nạp firmware</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <pre class="log-output" id="logOutput">Chưa có nhật ký nào. Nhấn "Cài đặt Firmware" để bắt đầu.</pre>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-sm btn-outline-light" id="btnClearLog"><i class="bi bi-trash"></i> Xoá nhật ký</button>
-        <button class="btn btn-sm btn-accent" data-bs-dismiss="modal">Đóng</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ============ MODAL KHỞI ĐỘNG LẠI (sau khi hoàn tất) ============ -->
-<div class="modal fade" id="doneModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content modal-console text-center">
-      <div class="modal-body py-5">
-        <div class="done-icon mb-3"><i class="bi bi-check-circle-fill"></i></div>
-        <h4>Nạp firmware hoàn tất!</h4>
-        <p class="text-dim">ESP32 sẽ tự khởi động lại với firmware mới trong giây lát.</p>
-        <button class="btn btn-accent btn-lg w-100 mt-2" id="btnRestart">
-          <i class="bi bi-arrow-clockwise"></i> Khởi động lại ESP32
-        </button>
-        <button class="btn btn-link text-dim mt-2" data-bs-dismiss="modal">Đóng</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Bootstrap Bundle -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="app.js" type="module"></script>
+  <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

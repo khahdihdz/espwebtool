@@ -1,0 +1,23 @@
+{
+  "name": "esp32-web-flasher",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/spark-md5": "^3.0.5",
+    "@types/w3c-web-serial": "^1.0.8",
+    "typescript": "~6.0.2",
+    "vite": "^8.2.0",
+    "vitest": "^4.1.10"
+  },
+  "dependencies": {
+    "esptool-js": "^0.6.1",
+    "spark-md5": "^3.0.2"
+  }
+}

@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.pio/
+.vscode/
+*.log
+.DS_Store

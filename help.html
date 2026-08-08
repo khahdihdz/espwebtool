@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0e12" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="manifest" href="/manifest.json" />
+  <title>Hướng dẫn — ESP32 Flash Tool</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <header class="appbar">
+    <div class="appbar__mark" aria-hidden="true"></div>
+    <div class="appbar__title">ESP32 Flash Tool<small>USB OTG · không cần PC</small></div>
+    <nav class="appbar__nav">
+      <a href="/index.html">Flash</a>
+      <a href="/ota.html">OTA</a>
+      <a href="/system-check.html">Kiểm tra</a>
+      <a href="/help.html" aria-current="page">Hướng dẫn</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2 class="panel__title">Nạp firmware lần đầu</h2>
+      <ol class="steps">
+        <li>Cắm ESP32 DevKit V1 vào điện thoại Android bằng cáp USB OTG (USB-A ⇄ USB-C/Micro-USB tuỳ điện thoại).</li>
+        <li>Mở trang này bằng <b>Chrome for Android</b> (hoặc trình duyệt Chromium khác — xem trang <a href="/system-check.html">Kiểm tra</a>).</li>
+        <li>Vào trang <a href="/index.html">Flash</a>, bấm <b>Kết nối ESP32</b>.</li>
+        <li>Android sẽ hỏi quyền truy cập USB — chọn đúng thiết bị CP2102/CH340 rồi bấm <b>Kết nối</b>.</li>
+        <li>Nếu không nhận được: giữ <code>BOOT</code> → nhấn <code>RESET/EN</code> → thả <code>RESET/EN</code> → thả <code>BOOT</code> → thử kết nối lại.</li>
+        <li>Chọn file <code>firmware.bin</code> (offset mặc định <code>0x10000</code>).</li>
+        <li>Bấm <b>Flash Firmware</b> và chờ tới khi log báo <code>SUCCESS</code> và ô Verify hiện <code>VERIFY SUCCESS</code>.</li>
+      </ol>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel__title">Cập nhật qua OTA (không cần USB)</h2>
+      <ol class="steps">
+        <li>Sau lần flash đầu, ESP32 tự tạo AP <code>ESP32-SETUP</code> nếu chưa có Wi-Fi đã lưu.</li>
+        <li>Kết nối điện thoại vào AP đó, nhập SSID/mật khẩu Wi-Fi nhà bạn qua trang cấu hình của firmware.</li>
+        <li>Mở trang <a href="/ota.html">OTA</a>, nhập URL manifest.json (thường host trên GitHub Releases).</li>
+        <li>Nếu có bản mới, thiết bị (không phải trang web) sẽ tự tải, kiểm tra SHA-256, ghi vào OTA partition rồi khởi động lại.</li>
+      </ol>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel__title">Xử lý lỗi thường gặp</h2>
+
+      <div class="callout callout--err">
+        <p><b>Không tìm thấy thiết bị</b></p>
+        <p>Kiểm tra: cáp USB OTG có hỗ trợ truyền dữ liệu (không phải cáp chỉ sạc), đã cấp quyền USB khi trình duyệt hỏi, và cáp/cổng không lỏng.</p>
+      </div>
+
+      <div class="callout callout--err">
+        <p><b>ESP32 chưa vào Download Mode / Sync failed</b></p>
+        <p>Giữ <code>BOOT</code> → nhấn <code>RESET</code> → thả <code>RESET</code> → thả <code>BOOT</code>, rồi bấm kết nối lại. Một số board rời không có DTR/RTS nối đúng chân nên auto-reset không hoạt động — bắt buộc phải làm thủ công.</p>
+      </div>
+
+      <div class="callout callout--err">
+        <p><b>Permission denied / không có quyền USB Host</b></p>
+        <p>Trình duyệt không cho phép trang web truy cập trực tiếp <code>/dev/bus/usb</code>. Đây là giới hạn bảo mật của hệ điều hành, không thể bỏ qua từ JavaScript. Nếu Web Serial báo lỗi này liên tục dù đã chọn đúng thiết bị, hãy thử fallback bên dưới.</p>
+      </div>
+
+      <div class="callout callout--err">
+        <p><b>Verify failed</b></p>
+        <p>MD5 đọc lại từ flash không khớp file gốc. Thường do cáp kém chất lượng gây lỗi truyền ở tốc độ baud cao, hoặc mất kết nối giữa chừng. Thử lại với cáp tốt hơn; không dùng firmware nếu verify vẫn thất bại.</p>
+      </div>
+
+      <div class="callout callout--err">
+        <p><b>USB bị rút ra giữa chừng khi đang flash</b></p>
+        <p>Không tự ý rút cáp khi thanh tiến trình đang chạy — flash dở dang có thể để bootloader ở trạng thái không nhất quán. Cắm lại và làm lại từ bước Xoá Flash.</p>
+      </div>
+
+      <div class="callout callout--err">
+        <p><b>Trình duyệt không hỗ trợ API cần thiết</b></p>
+        <p>Web Serial hiện chỉ chạy trên trình duyệt nền Chromium. Firefox Android và mọi trình duyệt trên iOS/iPadOS (kể cả Chrome iOS, vì dùng WebKit) đều không hỗ trợ. Xem trang <a href="/system-check.html">Kiểm tra</a> để biết chính xác API nào đang thiếu.</p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel__title">Giới hạn thực tế của WebUSB/Web Serial trên Android</h2>
+      <ul>
+        <li>Chỉ hoạt động trên trình duyệt nền Chromium — không có trên Firefox Android, không có trên bất kỳ trình duyệt nào chạy engine WebKit bắt buộc của iOS.</li>
+        <li>Trang bắt buộc chạy trong ngữ cảnh bảo mật (HTTPS hoặc localhost); mở qua HTTP sẽ khiến <code>navigator.serial</code> không tồn tại.</li>
+        <li>Người dùng phải chọn thiết bị qua hộp thoại hệ thống ở mỗi phiên — không thể tự động kết nối lại ngầm vì lý do bảo mật.</li>
+        <li>Không có quyền truy cập <code>/dev/bus/usb</code> trực tiếp; mọi giao tiếp phải đi qua API do trình duyệt cấp.</li>
+        <li>Một số ROM Android/trình duyệt OEM tuỳ biến (MIUI, EMUI cũ, một số trình duyệt mặc định hãng máy) có thể chặn hoặc giới hạn thêm quyền USB ngoài chuẩn Chromium.</li>
+      </ul>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel__title">Fallback khi trình duyệt không hỗ trợ</h2>
+      <p class="callout" style="margin-bottom:10px">
+        Nếu Web Serial/WebUSB không truy cập được CP2102/CH340 trên máy bạn, công cụ thuần web không thể
+        vượt qua giới hạn sandbox của Android — cần một trong các hướng sau:
+      </p>
+      <ul>
+        <li><b>Android WebView tuỳ biến + USB Host API</b>: đóng gói trang này trong một app WebView, dùng Android USB Host API (native, Java/Kotlin) làm cầu nối tới CP2102/CH340, expose lại cho JavaScript qua <code>addJavascriptInterface</code>.</li>
+        <li><b>Termux bridge</b>: cài Termux + gói <code>esptool</code>/<code>pyserial</code>, chạy flash bằng dòng lệnh thực tế trên chính điện thoại (vẫn không cần PC, nhưng cần thao tác terminal).</li>
+        <li><b>ESP Web Tools</b>: nếu firmware đã được đóng gói theo chuẩn manifest của ESP Web Tools và trình duyệt hỗ trợ Web Serial, có thể dùng thẳng công cụ đó thay vì tự viết.</li>
+      </ul>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel__title">Checklist kiểm thử thực tế</h2>
+      <ul>
+        <li>[ ] Android nhận diện thiết bị USB</li>
+        <li>[ ] Trình duyệt nhận diện thiết bị (hộp thoại chọn cổng hiện ra)</li>
+        <li>[ ] ESP32 bootloader sync thành công</li>
+        <li>[ ] Phát hiện đúng chip ESP32</li>
+        <li>[ ] Đọc được MAC address</li>
+        <li>[ ] Đọc được flash size</li>
+        <li>[ ] Erase flash thành công</li>
+        <li>[ ] Flash firmware thành công</li>
+        <li>[ ] Verify MD5 khớp</li>
+        <li>[ ] Reset và ESP32 boot vào firmware mới</li>
+        <li>[ ] ESP32 kết nối được Wi-Fi</li>
+        <li>[ ] Kiểm tra OTA nhận đúng bản mới</li>
+        <li>[ ] OTA verify SHA-256 trước khi ghi</li>
+        <li>[ ] OTA rollback khi firmware mới lỗi</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="pagefoot">esp32-web-flasher · trang tĩnh, không script bắt buộc</footer>
+</body>
+</html>

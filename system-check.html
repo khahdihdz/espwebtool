@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0e12" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="manifest" href="/manifest.json" />
+  <title>Kiểm tra tương thích — ESP32 Flash Tool</title>
+</head>
+<body>
+  <header class="appbar">
+    <div class="appbar__mark" aria-hidden="true"></div>
+    <div class="appbar__title">ESP32 Flash Tool<small>USB OTG · không cần PC</small></div>
+    <nav class="appbar__nav">
+      <a href="/index.html">Flash</a>
+      <a href="/ota.html">OTA</a>
+      <a href="/system-check.html" aria-current="page">Kiểm tra</a>
+      <a href="/help.html">Hướng dẫn</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2 class="panel__title">/system-check</h2>
+      <table class="check-table" id="checkTable"></table>
+    </section>
+
+    <section class="panel" id="verdictPanel">
+      <h2 class="panel__title">Kết luận</h2>
+      <div id="verdictBox"></div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel__title">Thiết bị</h2>
+      <dl class="kv" id="deviceKv"></dl>
+    </section>
+  </main>
+
+  <footer class="pagefoot">esp32-web-flasher · tự kiểm tra ngay trong trình duyệt, không gửi dữ liệu lên server</footer>
+
+  <script type="module" src="/src/system-check.ts"></script>
+</body>
+</html>
